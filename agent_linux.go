@@ -14,10 +14,18 @@ import (
 
 const (
 	serviceName = "viam-agent"
+
+	// detachedServiceName is a fallback service, triggered via OnFailure= in the viam-agent
+	// unit, that runs viam-server directly when the installed viam-agent binary is "bad"
+	// (repeatedly fails to start).
+	detachedServiceName = "viam-server-detached"
 )
 
 //go:embed viam-agent.service
 var serviceFileContents []byte
+
+//go:embed viam-server-detached.service
+var detachedServiceFileContents []byte
 
 // InstallNewVersion runs the newly downloaded binary's Install() for installation of systemd files and the like.
 func InstallNewVersion(ctx context.Context, logger logging.Logger) (bool, error) {

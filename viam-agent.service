@@ -2,7 +2,12 @@
 Description=Viam Services Agent
 After=NetworkManager.service
 After=bluetooth.service
-StartLimitIntervalSec=0
+# If viam-agent fails to (re)start 3 times within 2 minutes, assume the installed
+# viam-agent binary is bad, give up on it, and fall back to running viam-server directly
+# so the machine remains reachable through app.viam.com.
+StartLimitIntervalSec=120
+StartLimitBurst=3
+OnFailure=viam-server-detached.service
 
 [Service]
 Type=exec

@@ -1,0 +1,22 @@
+[Unit]
+Description=Viam Server (detached mode)
+# Never run alongside viam-agent, which manages viam-server itself. Starting
+# viam-agent again (e.g. after a fix is deployed) stops this fallback.
+Conflicts=viam-agent.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+Restart=always
+RestartSec=5
+User=root
+TimeoutSec=240
+# Tells (new enough) viam-server versions to log that they are running in
+# detached mode; older versions simply ignore it and run normally.
+Environment=VIAM_SERVER_DETACHED=true
+ExecStart=/opt/viam/bin/viam-server -config /etc/viam.json
+KillMode=mixed
+FinalKillSignal=SIGKILL
+
+# No [Install] section: this unit is only ever started via OnFailure= from
+# viam-agent.service and should never be enabled on its own.

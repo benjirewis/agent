@@ -69,6 +69,12 @@ func TestInstall(t *testing.T) {
 		test.That(t, version.SymlinkPath, test.ShouldEqual, expectedBinPath)
 
 		test.That(t, systemdManager.enableCallCount, test.ShouldEqual, 1)
+
+		if runtime.GOOS == "linux" {
+			// on Linux the detached mode fallback service is installed alongside the
+			// main service (but never enabled)
+			test.That(t, systemdManager.installedServices, test.ShouldResemble, []string{"viam-agent", "viam-server-detached"})
+		}
 	})
 
 	t.Run("self update", func(t *testing.T) {
@@ -129,9 +135,10 @@ func TestInstall(t *testing.T) {
 }
 
 type fakeSystemdManager struct {
-	unavailable     bool
-	enableCallCount int
-	isNewInstall    bool
+	unavailable       bool
+	enableCallCount   int
+	isNewInstall      bool
+	installedServices []string
 }
 
 func (f *fakeSystemdManager) Enable(ctx context.Context, serviceName string) error {
@@ -140,6 +147,7 @@ func (f *fakeSystemdManager) Enable(ctx context.Context, serviceName string) err
 }
 
 func (f *fakeSystemdManager) InstallService(ctx context.Context, serviceName string, serviceFileContents []byte) (string, bool, error) {
+	f.installedServices = append(f.installedServices, serviceName)
 	return "", f.isNewInstall, nil
 }
 

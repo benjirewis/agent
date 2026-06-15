@@ -100,6 +100,15 @@ func Install(ctx context.Context, logger logging.Logger, sManager systemManager)
 		}
 	}
 
+	// On platforms with a detached mode fallback service (currently Linux only), install it
+	// as well. It is intentionally never enabled: it is only started by the system manager
+	// when the viam-agent service repeatedly fails.
+	if len(detachedServiceFileContents) > 0 {
+		if _, _, err := sManager.InstallService(ctx, detachedServiceName, detachedServiceFileContents); err != nil {
+			return errw.Wrap(err, "installing detached mode fallback service")
+		}
+	}
+
 	_, err = os.Stat("/etc/viam.json")
 	if err != nil {
 		if errw.Is(err, fs.ErrNotExist) {
