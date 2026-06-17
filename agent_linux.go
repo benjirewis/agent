@@ -15,10 +15,14 @@ import (
 const (
 	serviceName = "viam-agent"
 
-	// detachedServiceName is a fallback service, triggered via OnFailure= in the viam-agent
-	// unit, that runs viam-server directly when the installed viam-agent binary is "bad"
-	// (repeatedly fails to start).
+	// detachedServiceName is a fallback service that runs viam-server directly when the
+	// installed viam-agent binary is "bad". It is started via OnFailure= from viam-agent.service.
 	detachedServiceName = "viam-server-detached"
+
+	// detachedRetryScriptName is the ExecStartPre= helper for viam-server-detached.service
+	// that schedules backoff-delayed attempts to leave detached mode. It must match the
+	// path referenced in viam-server-detached.service.
+	detachedRetryScriptName = "schedule-agent-retry.sh"
 )
 
 //go:embed viam-agent.service
@@ -26,6 +30,9 @@ var serviceFileContents []byte
 
 //go:embed viam-server-detached.service
 var detachedServiceFileContents []byte
+
+//go:embed schedule-agent-retry.sh
+var detachedRetryScriptContents []byte
 
 // InstallNewVersion runs the newly downloaded binary's Install() for installation of systemd files and the like.
 func InstallNewVersion(ctx context.Context, logger logging.Logger) (bool, error) {

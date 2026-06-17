@@ -17,15 +17,20 @@ import (
 const (
 	serviceName = "com.viam.agent"
 
-	// detachedServiceName is unused on MacOS; there is no detached mode fallback service.
-	detachedServiceName = ""
+	// detachedServiceName and detachedRetryScriptName are unused on MacOS; there is no
+	// detached mode fallback service.
+	detachedServiceName     = ""
+	detachedRetryScriptName = ""
 )
 
 //go:embed com.viam.agent.plist
 var serviceFileContents []byte
 
-// detachedServiceFileContents is nil on MacOS; there is no detached mode fallback service.
-var detachedServiceFileContents []byte
+// These are nil on MacOS; there is no detached mode fallback service.
+var (
+	detachedServiceFileContents []byte
+	detachedRetryScriptContents []byte
+)
 
 // InstallNewVersion runs the newly downloaded binary's Install() for installation of launchd service files and the like.
 func InstallNewVersion(ctx context.Context, logger logging.Logger) (bool, error) {

@@ -3,13 +3,24 @@ Description=Viam Services Agent
 After=NetworkManager.service
 After=bluetooth.service
 StartLimitIntervalSec=0
+# Fall back to running viam-server alone when viam-agent fails to start/run. The
+# detached service schedules backoff-delayed attempts to restart viam-agent, so a
+# transient or false-positive failure recovers automatically (see that unit).
 OnFailure=viam-server-detached.service
 
 [Service]
 Type=exec
+# Restart on a clean exit (e.g. self-update) and on SIGKILL. SuccessExitStatus
+# treats SIGKILL as a clean termination, so an external "kill -9" brings the agent
+# back (and is not treated as an OnFailure= trigger) rather than dropping into
+# detached mode. Genuine bad-binary failures (non-zero exit, crash signals, OOM,
+# watchdog) are NOT "success", so instead of restarting they trigger OnFailure=.
 Restart=on-success
+SuccessExitStatus=SIGKILL
 RestartSec=5
 User=root
+# TimeoutSec sets both the start and stop timeouts. A stop that exceeds this is
+# force-killed (KillMode/FinalKillSignal below).
 TimeoutSec=240
 ExecStart=/opt/viam/bin/viam-agent --config /etc/viam.json --enable-syscfg --enable-networking
 KillMode=mixed

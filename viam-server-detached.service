@@ -11,6 +11,12 @@ Restart=always
 RestartSec=5
 User=root
 TimeoutSec=240
+# Schedule a (backoff-delayed) attempt to leave detached mode by starting viam-agent
+# again -- which, via Conflicts= above, stops this fallback. A healthy agent then stays
+# up (auto-recovery from a transient/false-positive failure); a still-bad agent triggers
+# OnFailure= back into detached mode and the next, longer-delayed retry is scheduled.
+# Leading "-" so a scheduling failure can never stop viam-server from running.
+ExecStartPre=-/bin/sh /opt/viam/etc/schedule-agent-retry.sh
 # Tells (new enough) viam-server versions to log that they are running in
 # detached mode; older versions simply ignore it and run normally.
 Environment=VIAM_SERVER_DETACHED=true
@@ -19,4 +25,4 @@ KillMode=mixed
 FinalKillSignal=SIGKILL
 
 # No [Install] section: this unit is only ever started via OnFailure= from
-# viam-agent.service and should never be enabled on its own.
+# viam-agent.service or by a scheduled retry, never enabled on its own.

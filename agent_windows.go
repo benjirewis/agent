@@ -12,13 +12,16 @@ import (
 const (
 	serviceName = "viam-agent"
 
-	// detachedServiceName is unused on Windows; there is no detached mode fallback service yet.
-	detachedServiceName = ""
+	// detachedServiceName and detachedRetryScriptName are unused on Windows; there is no
+	// detached mode fallback service yet.
+	detachedServiceName     = ""
+	detachedRetryScriptName = ""
 )
 
 var (
 	serviceFileContents         []byte
 	detachedServiceFileContents []byte
+	detachedRetryScriptContents []byte
 )
 
 // InstallNewVersion is a no-op on Windows as there is no system service update mechanism.
