@@ -54,14 +54,18 @@ count=$((count + 1))
 mkdir -p "$(dirname "$STATE_FILE")"
 printf '%s\n%s\n' "$count" "$now" >"$STATE_FILE"
 
-# Backoff schedule in seconds, capped at 6h.
+# Backoff schedule in seconds, capped at 6h. The first attempt is near-immediate
+# so a false positive (e.g. an OOM kill of a healthy agent) is escaped right away;
+# it cannot be 0 because starting viam-agent Conflicts= this detached service,
+# which is still activating while this ExecStartPre= runs.
 case "$count" in
-1) delay=60 ;;
-2) delay=120 ;;
-3) delay=300 ;;
-4) delay=900 ;;
-5) delay=1800 ;;
-6) delay=3600 ;;
+1) delay=5 ;;
+2) delay=60 ;;
+3) delay=120 ;;
+4) delay=300 ;;
+5) delay=900 ;;
+6) delay=1800 ;;
+7) delay=3600 ;;
 *) delay=21600 ;;
 esac
 
