@@ -4,6 +4,10 @@ Description=Viam Server (detached mode)
 # viam-agent again (e.g. after a fix is deployed) stops this fallback.
 Conflicts=viam-agent.service
 StartLimitIntervalSec=0
+# Refuse "systemctl start viam-server-detached" (even as root): detached mode
+# must only ever be entered via OnFailure= from viam-agent.service, never by
+# hand. Manual stop remains allowed for deliberate shutdown.
+RefuseManualStart=yes
 
 [Service]
 Type=exec
