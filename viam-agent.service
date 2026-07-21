@@ -10,13 +10,14 @@ OnFailure=viam-server-detached.service
 
 [Service]
 Type=exec
-# Restart on a clean exit (e.g. self-update) and on SIGKILL. SuccessExitStatus
-# treats SIGKILL as a clean termination, so an external "kill -9" brings the agent
-# back (and is not treated as an OnFailure= trigger) rather than dropping into
-# detached mode. Genuine bad-binary failures (non-zero exit, crash signals, OOM,
-# watchdog) are NOT "success", so instead of restarting they trigger OnFailure=.
+# Restart on a clean exit (e.g. self-update) and on SIGKILL/SIGQUIT.
+# SuccessExitStatus treats those as a clean termination, so an external "kill -9"
+# or "kill -QUIT" (e.g. to dump goroutine stacks) brings the agent back (and is
+# not treated as an OnFailure= trigger) rather than dropping into detached mode.
+# Genuine bad-binary failures (non-zero exit, crash signals, OOM, watchdog) are
+# NOT "success", so instead of restarting they trigger OnFailure=.
 Restart=on-success
-SuccessExitStatus=SIGKILL
+SuccessExitStatus=SIGKILL SIGQUIT
 RestartSec=5
 User=root
 # TimeoutSec sets both the start and stop timeouts. A stop that exceeds this is
