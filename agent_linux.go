@@ -20,7 +20,7 @@ const (
 	detachedServiceName = "viam-server-detached"
 
 	// detachedRetryScriptName is the ExecStartPre= helper for viam-server-detached.service
-	// that schedules backoff-delayed attempts to leave detached mode. It must match the
+	// that schedules delayed attempts to leave detached mode. It must match the
 	// path referenced in viam-server-detached.service.
 	detachedRetryScriptName = "schedule-agent-retry.sh"
 )

@@ -15,10 +15,10 @@ Restart=always
 RestartSec=5
 User=root
 TimeoutSec=240
-# Schedule a (backoff-delayed) attempt to leave detached mode by starting viam-agent
+# Schedule a delayed attempt to leave detached mode by starting viam-agent
 # again -- which, via Conflicts= above, stops this fallback. A healthy agent then stays
 # up (auto-recovery from a transient/false-positive failure); a still-bad agent triggers
-# OnFailure= back into detached mode and the next, longer-delayed retry is scheduled.
+# OnFailure= back into detached mode and another retry is scheduled.
 # Leading "-" so a scheduling failure can never stop viam-server from running.
 ExecStartPre=-/bin/sh /opt/viam/etc/schedule-agent-retry.sh
 # Tells (new enough) viam-server versions to log that they are running in

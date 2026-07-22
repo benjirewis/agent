@@ -4,7 +4,7 @@ After=NetworkManager.service
 After=bluetooth.service
 StartLimitIntervalSec=0
 # Fall back to running viam-server alone when viam-agent fails to start/run. The
-# detached service schedules backoff-delayed attempts to restart viam-agent, so a
+# detached service schedules delayed attempts to restart viam-agent, so a
 # transient or false-positive failure recovers automatically (see that unit).
 OnFailure=viam-server-detached.service
 

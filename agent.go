@@ -110,7 +110,7 @@ func Install(ctx context.Context, logger logging.Logger, sManager systemManager)
 	}
 
 	// Install the ExecStartPre= helper script that viam-server-detached.service uses to
-	// schedule backoff-delayed attempts to leave detached mode. It is invoked via
+	// schedule delayed attempts to leave detached mode. It is invoked via
 	// "/bin/sh <path>", so it does not need an executable bit. Path must match the one in
 	// viam-server-detached.service.
 	if len(detachedRetryScriptContents) > 0 {
